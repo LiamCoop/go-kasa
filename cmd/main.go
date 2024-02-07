@@ -9,8 +9,13 @@ import (
 
 
 func main() {
+    usage()
+}
+
+func formatDiscover() {
     var repeats = 1
     var timeout = 2
+
     m, err := kasa.Discover(repeats, timeout)
     if err != nil {
         return
@@ -34,4 +39,22 @@ func main() {
             }
         }
     } 
+}
+
+func usage() {
+    var repeats = 1
+    var timeout = 2
+
+    m, err := kasa.Usage(repeats, timeout)
+    if err != nil {
+        return 
+    }
+
+    keys := make([]string, 0, len(m))
+    for key := range m {
+        keys = append(keys, key)
+    }
+    sort.Strings(keys)
+
+    
 }

@@ -1,7 +1,7 @@
 package kasa
 
 import (
-    "log"
+	"log"
 )
 
 // by default, use the standard logger, can be overwritten using kasa.SetLogger(l)
@@ -20,6 +20,7 @@ type KasaDevice struct {
 	NetIf      NetIf      `json:"netif"`
 	Countdown  Countdown  `json:"count_down"`
 	Emeter     EmeterSub  `json:"emeter"`
+	Schedule   Schedule   `json:"schedule"`
 }
 
 // GetSysinfo is defined by kasa devices
@@ -43,7 +44,7 @@ type Sysinfo struct {
 	MIC            string   `json:"mic_type"`
 	Feature        string   `json:"feature"`
 	MAC            string   `json:"mac"`
-	Updating       uint8    `json""updating"`
+	Updating       uint8    `json:"updating"`
 	LEDOff         uint8    `json:"led_off"`
 	RelayState     uint8    `json:"relay_state"`
 	Brightness     uint8    `json:"brightness"`
@@ -186,4 +187,20 @@ type AddRule struct {
 // SetLogger allows applications to register their own logging interface
 func SetLogger(l kasalogger) {
 	klogger = l
+}
+
+// MonthStat is defined bykasa devices
+// {"schedule":{"get_monthstat":{"month_list":[{"year":2024,"month":1,"time":125},{"year":2024,"month":2,"time":1098}],"err_code":0}}}
+type Schedule struct {
+    GetMonthStat MonthStat `json:"get_monthstat"`
+}
+
+type MonthStat struct {
+    MonthList []MonthItem `json:"month_list"`
+}
+
+type MonthItem struct {
+    Year int16 `json:"year"`
+    Month int8 `json:"month"`
+    Time int64 `json:"time"`
 }
