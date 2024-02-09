@@ -49,6 +49,5 @@ const (
 	CmdSetServerURL   = `{"cnCloud":{"set_server_url":{"server":"%s"}}}`          // bare hostname, no protocol spec
 	CmdSetServerCreds = `{"cnCloud":{"bind":{"username":"%s", "password":"%s"}}}` // alice@home.com / mikeisagoat
 
-    CmdGetMonthlyUsageInYear = `{"schedule":{"get_monthstat": {"year":2024}}}`
-
+	CmdGetMonthlyUsageInYear = `{"schedule":{"get_monthstat": {"year": %d}}}`
 )

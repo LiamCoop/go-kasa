@@ -3,61 +3,34 @@ package kasa
 import (
 	"encoding/json"
 	"fmt"
-	"net"
-	"time"
 )
 
-func Usage(timeout, probes int) (map[string]*Sysinfo, error) {
+// CmdGetMonthlyUsageInYear
+func (d *Device) Usage(usageYear int16) (Schedule, error) {
+	command := fmt.Sprintf(CmdGetMonthlyUsageInYear, usageYear)
+	bytes, err := d.SendTCP(command)
 
-    conn, err := net.ListenUDP("udp", &net.UDPAddr{IP: nil, Port: 0})
-    if err != nil {
-        
-        return nil, err
-    }
-    defer conn.Close()
+	if err != nil {
+		klogger.Printf("failed to send TCP")
+	}
 
-    conn.SetDeadline(time.Now().Add(time.Second * time.Duration(timeout)))
+	var kd KasaDevice
+	if err = json.Unmarshal(bytes, &kd); err != nil {
+		klogger.Printf("unmarshal: %s", err.Error())
+		return kd.Schedule, err
+	}
 
-    go func() {
-        // XOR the broadcast command
-        payload := Scramble(CmdGetMonthlyUsageInYear)
-        for i:= 0; i < probes; i++ {
-            broadcast, _ := BroadcastAddresses()
-            for _, b := range broadcast {
-                _, err = conn.WriteToUDP(payload, &net.UDPAddr{IP: b, Port: 9999})
-                if err != nil {
-                    klogger.Printf("write to udp failed %s", err.Error()) 
-                    return
-                }
-            }
-            time.Sleep(time.Second * time.Duration(timeout/(probes+1)))
-        }
-    }()
+	return kd.Schedule, nil
+}
 
-    buffer := make([]byte, bufsize)
-    for {
-        n, _, err := conn.ReadFromUDP(buffer)
-        if err != nil {
-            klogger.Printf("Read from UDP failed %s", err.Error())
-            break
-        }
-
-        res := Unscramble(buffer[:n])
-
-        var kd KasaDevice
-        if err = json.Unmarshal(res, &kd); err != nil {
-            klogger.Printf("unmarshal: %s\n", err.Error())
-            return nil, err
-        }
-
-        str, err := json.Marshal(kd.Schedule)
-        if err != nil {
-            klogger.Printf("marshal failed on month list: %d")
-            return nil, err
-        }
-
-        fmt.Printf("marshal %s", str)
-    }
-
-    return nil, nil
+// Does not work
+// CmdLEDOff
+func (d *Device) DeviceOff() error {
+	command := fmt.Sprintf(CmdLEDOff, 0)
+	fmt.Println(command)
+	err := d.SendUDP(command)
+	if err != nil {
+		klogger.Printf("failed to send UDP")
+	}
+	return nil
 }

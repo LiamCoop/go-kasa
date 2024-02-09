@@ -2,6 +2,7 @@ package kasa
 
 import (
 	"log"
+	"net"
 )
 
 // by default, use the standard logger, can be overwritten using kasa.SetLogger(l)
@@ -11,6 +12,13 @@ var klogger kasalogger = log.Default()
 type kasalogger interface {
 	Println(...interface{})
 	Printf(string, ...interface{})
+}
+type Device struct {
+	// is any of this actually helpful?
+	IP     string
+	Port   int
+	Parsed net.IP
+	Debug  bool
 }
 
 // KasaDevice is the primary type, defined by kasa devices
@@ -192,15 +200,15 @@ func SetLogger(l kasalogger) {
 // MonthStat is defined bykasa devices
 // {"schedule":{"get_monthstat":{"month_list":[{"year":2024,"month":1,"time":125},{"year":2024,"month":2,"time":1098}],"err_code":0}}}
 type Schedule struct {
-    GetMonthStat MonthStat `json:"get_monthstat"`
+	GetMonthStat MonthStat `json:"get_monthstat"`
 }
 
 type MonthStat struct {
-    MonthList []MonthItem `json:"month_list"`
+	MonthList []MonthItem `json:"month_list"`
 }
 
 type MonthItem struct {
-    Year int16 `json:"year"`
-    Month int8 `json:"month"`
-    Time int64 `json:"time"`
+	Year  int16 `json:"year"`
+	Month int8  `json:"month"`
+	Time  int64 `json:"time"`
 }
