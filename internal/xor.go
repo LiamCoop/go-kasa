@@ -1,8 +1,9 @@
-package kasa
+package internal
 
 import (
 	"bytes"
 	"encoding/binary"
+	"fmt"
 )
 
 func Scramble(plaintext string) []byte {
@@ -46,7 +47,7 @@ func ScrambleTCP(plaintext string) []byte {
 	for i := 0; i < n; i++ {
 		key = plaintext[i] ^ key
 		if err := buf.WriteByte(key); err != nil {
-			klogger.Printf(err.Error())
+			fmt.Println(err.Error())
 			break
 		}
 	}

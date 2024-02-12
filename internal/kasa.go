@@ -1,4 +1,4 @@
-package kasa
+package internal
 
 import (
 	"log"
@@ -6,7 +6,7 @@ import (
 )
 
 // by default, use the standard logger, can be overwritten using kasa.SetLogger(l)
-var klogger kasalogger = log.Default()
+var Klogger kasalogger = log.Default()
 
 // Any log interface that has Println and Printf will do
 type kasalogger interface {
@@ -14,7 +14,6 @@ type kasalogger interface {
 	Printf(string, ...interface{})
 }
 type Device struct {
-	// is any of this actually helpful?
 	IP     string
 	Port   int
 	Parsed net.IP
@@ -23,12 +22,12 @@ type Device struct {
 
 // KasaDevice is the primary type, defined by kasa devices
 type KasaDevice struct {
-	GetSysinfo GetSysinfo `json:"system"`
-	Dimmer     Dimmer     `json:"smartlife.iot.dimmer"`
-	NetIf      NetIf      `json:"netif"`
-	Countdown  Countdown  `json:"count_down"`
-	Emeter     EmeterSub  `json:"emeter"`
-	Schedule   Schedule   `json:"schedule"`
+	System    GetSysinfo `json:"system"`
+	Dimmer    Dimmer     `json:"smartlife.iot.dimmer"`
+	NetIf     NetIf      `json:"netif"`
+	Countdown Countdown  `json:"count_down"`
+	Emeter    EmeterSub  `json:"emeter"`
+	Schedule  Schedule   `json:"schedule"`
 }
 
 // GetSysinfo is defined by kasa devices
@@ -194,7 +193,7 @@ type AddRule struct {
 
 // SetLogger allows applications to register their own logging interface
 func SetLogger(l kasalogger) {
-	klogger = l
+	Klogger = l
 }
 
 // MonthStat is defined bykasa devices

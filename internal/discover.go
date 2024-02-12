@@ -1,4 +1,4 @@
-package kasa
+package internal
 
 import (
 	"encoding/json"
@@ -47,6 +47,7 @@ func BroadcastAddresses() ([]net.IP, error) {
 
 var bufsize = 2048
 
+// timeout? probes? purpose?
 func Discover(timeout, probes int) (map[string]*Sysinfo, error) {
 	m := make(map[string]*Sysinfo)
 
@@ -67,7 +68,7 @@ func Discover(timeout, probes int) (map[string]*Sysinfo, error) {
 			for _, b := range broadcast {
 				_, err = conn.WriteToUDP(payload, &net.UDPAddr{IP: b, Port: 9999})
 				if err != nil {
-					klogger.Printf("write to udp failed %s", err.Error())
+					Klogger.Printf("write to udp failed %s", err.Error())
 					return
 				}
 			}
@@ -77,9 +78,10 @@ func Discover(timeout, probes int) (map[string]*Sysinfo, error) {
 
 	buffer := make([]byte, bufsize)
 	for {
+		// first one always fails for some reason.
 		n, addr, err := conn.ReadFromUDP(buffer)
 		if err != nil {
-			klogger.Printf("Read from UDP failed %s", err.Error())
+			Klogger.Printf("Read from UDP failed %s", err.Error())
 			break
 		}
 
@@ -87,11 +89,11 @@ func Discover(timeout, probes int) (map[string]*Sysinfo, error) {
 
 		var kd KasaDevice
 		if err = json.Unmarshal(res, &kd); err != nil {
-			klogger.Printf("unmarshal: %s\n", err.Error())
+			Klogger.Printf("unmarshal: %s\n", err.Error())
 			return nil, err
 		}
 
-		m[addr.IP.String()] = &kd.GetSysinfo.Sysinfo
+		m[addr.IP.String()] = &kd.System.Sysinfo
 	}
 
 	return m, nil
@@ -104,10 +106,9 @@ func FormatDiscover(m map[string]*Sysinfo) {
 	}
 	sort.Strings(keys)
 
-	fmt.Printf("found %d devices\n", len(m))
 	for _, k := range keys {
 		v := m[k]
-		if len(v.Children) == 0 {
+		if v.NumChildren == 0 {
 			fmt.Printf("%15s: %s %32s [state: %d] [brightness: %3d]\n", k, v.Model, v.Alias, v.RelayState, v.Brightness)
 		} else {
 			fmt.Printf("%15s: %s %s\n", k, v.Model, v.Alias)

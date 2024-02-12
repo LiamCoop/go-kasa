@@ -1,10 +1,11 @@
-package kasa
+package internal
 
 // https://lib.dr.iastate.edu/cgi/viewcontent.cgi?article=1424&context=creativecomponents
 
 // Request strings
 const (
 	CmdSetRelayState = `{"system":{"set_relay_state":{"state":%d}}}` // 0 or 1
+	CmdGetDeviceIcon = `{"system":{"get_dev_icon":{}}}`
 	CmdGetSysinfo    = `{"system":{"get_sysinfo":{}}}`
 	CmdReboot        = `{"system":{"reboot":{"delay":2}}}`
 	CmdLEDOff        = `{"system":{"set_led_off":{"off":%d}}}` // off = 1, on = 0
@@ -50,4 +51,10 @@ const (
 	CmdSetServerCreds = `{"cnCloud":{"bind":{"username":"%s", "password":"%s"}}}` // alice@home.com / mikeisagoat
 
 	CmdGetMonthlyUsageInYear = `{"schedule":{"get_monthstat": {"year": %d}}}`
+
+	// netif
+	CmdNetifGetScanInfo = `{"netif":{"get_scaninfo":{"refresh":1}}}`
+
+	// Schedule
+	CmdScheduleGetNextAction = `{"schedule":{"get_next_action":{}}}`
 )

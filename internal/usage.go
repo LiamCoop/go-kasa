@@ -1,4 +1,4 @@
-package kasa
+package internal
 
 import (
 	"encoding/json"
@@ -11,12 +11,12 @@ func (d *Device) Usage(usageYear int16) (Schedule, error) {
 	bytes, err := d.SendTCP(command)
 
 	if err != nil {
-		klogger.Printf("failed to send TCP")
+		Klogger.Printf("failed to send TCP")
 	}
 
 	var kd KasaDevice
 	if err = json.Unmarshal(bytes, &kd); err != nil {
-		klogger.Printf("unmarshal: %s", err.Error())
+		Klogger.Printf("unmarshal: %s", err.Error())
 		return kd.Schedule, err
 	}
 
@@ -30,7 +30,7 @@ func (d *Device) DeviceOff() error {
 	fmt.Println(command)
 	err := d.SendUDP(command)
 	if err != nil {
-		klogger.Printf("failed to send UDP")
+		Klogger.Printf("failed to send UDP")
 	}
 	return nil
 }

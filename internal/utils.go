@@ -1,4 +1,4 @@
-package kasa
+package internal
 
 import (
 	"encoding/binary"
@@ -22,7 +22,7 @@ func DetailedSystemInfo(ip string) (*KasaDevice, error) {
 
 	var kd KasaDevice
 	if err = json.Unmarshal(bytes, &kd); err != nil {
-		klogger.Printf("unmarshal: %s", err.Error())
+		Klogger.Printf("unmarshal: %s", err.Error())
 		return nil, err
 	}
 
@@ -69,7 +69,7 @@ func (d *Device) SendUDP(cmd string) error {
 func (d *Device) SendTCP(cmd string) ([]byte, error) {
 	conn, err := net.DialTCP("tcp", nil, &net.TCPAddr{IP: d.Parsed, Port: d.Port})
 	if err != nil {
-		klogger.Printf("Cannot connnect to device: %s", err.Error())
+		Klogger.Printf("Cannot connnect to device: %s", err.Error())
 		return nil, err
 	}
 	defer conn.Close()
@@ -79,7 +79,7 @@ func (d *Device) SendTCP(cmd string) ([]byte, error) {
 	// send the command with the uint32 "header"
 	payload := ScrambleTCP(cmd)
 	if _, err = conn.Write(payload); err != nil {
-		klogger.Printf("Cannot send command to device: %s", err.Error())
+		Klogger.Printf("Cannot send command to device: %s", err.Error())
 		return nil, err
 	}
 
@@ -91,7 +91,7 @@ func (d *Device) SendTCP(cmd string) ([]byte, error) {
 	}
 	if n != 4 {
 		err := fmt.Errorf("header not 32 bits (4 bytes): %d", n)
-		klogger.Printf(err.Error())
+		Klogger.Printf(err.Error())
 		return nil, err
 	}
 	size := binary.BigEndian.Uint32(header)

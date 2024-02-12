@@ -1,4 +1,4 @@
-package kasa
+package internal
 
 import "fmt"
 
@@ -12,7 +12,7 @@ func (d *Device) SetState(state bool) {
 
 	err := d.SendUDP(command)
 	if err != nil {
-		klogger.Printf("Failed to update state")
+		Klogger.Printf("Failed to update state")
 	}
 
 }
